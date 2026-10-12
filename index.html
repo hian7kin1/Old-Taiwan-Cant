@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>臺灣舊社會暗語解密 - 互動遊戲</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Noto Serif TC", "Traditional Chinese", serif; }
+    body { background-color: #2b2521; color: #f4efeb; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+    #game-container { width: 960px; height: 540px; border: 4px solid #c8a364; border-radius: 8px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); background-size: cover; background-position: center; transition: background-image 0.5s ease-in-out; }
+    .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(20, 15, 10, 0.65); display: flex; flex-direction: column; justify-content: space-between; padding: 30px; }
+    header { text-align: center; border-bottom: 2px solid #c8a364; padding-bottom: 10px; }
+    h1 { color: #e8985e; font-size: 28px; letter-spacing: 2px; }
+    .subtitle { color: #d4c5b9; font-size: 14px; margin-top: 4px; }
+    #story-box { background: rgba(35, 27, 21, 0.85); border: 1px solid #c8a364; padding: 20px; border-radius: 6px; margin: 15px 0; min-height: 140px; }
+    #prompt-text { font-size: 20px; color: #ffffff; line-height: 1.6; margin-bottom: 10px; }
+    #sub-text { font-size: 15px; color: #e8985e; }
+    #options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+    .btn { background: #4a3628; color: #f4efeb; border: 1px solid #c8a364; padding: 14px; font-size: 16px; border-radius: 4px; cursor: pointer; transition: all 0.2s; text-align: left; }
+    .btn:hover { background: #e8985e; color: #1a120c; font-weight: bold; transform: translateY(-2px); }
+    footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(200,163,100,0.4); padding-top: 10px; font-size: 14px; }
+    .score-badge { background: #c8a364; color: #1a120c; padding: 4px 12px; border-radius: 12px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <div class="overlay">
+    <header>
+      <h1 id="stage-title">臺灣舊社會暗語解密</h1>
+      <div class="subtitle" id="stage-subtitle">Old Taiwan Cant</div>
+    </header>
+
+    <div id="story-box">
+      <div id="prompt-text">歡迎來到舊時代臺灣底層社會的暗語解密世界。</div>
+      <div id="sub-text">請選擇開始遊戲。</div>
+    </div>
+
+    <div id="options-grid">
+      <button class="btn" onclick="startGame()">▶ 開始解密挑戰</button>
+    </div>
+
+    <footer>
+      <span>目前得分：<span id="score">0</span></span>
+      <span id="progress">關卡 0 / 5</span>
+    </footer>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    {
+      stage: "第一關：【賊仔白】黑夜潛行",
+      bg: "thief_scene_bg.png",
+      prompt: "老大低聲對你喊：『龍仔，去【遏鳳梨】[at-ōng-lâi]！』",
+      sub: "你身為同夥，現在應該點擊目標執行什麼行動？",
+      options: [
+        { text: "前往鳳梨田採水果", correct: false },
+        { text: "前往雞舍偷雞", correct: true },
+        { text: "潛入屋內偷竊被褥", correct: false },
+        { text: "拔下婦女頭上的髮飾", correct: false }
+      ]
+    },
+    {
+      stage: "第一關：【賊仔白】黑夜潛行",
+      bg: "thief_scene_bg.png",
+      prompt: "周圍傳來腳步聲，老大急喊：『觀音在所大香共伊燒--去！』",
+      sub: "這是賊仔白的避敵心理戰術，你應該怎麼做？",
+      options: [
+        { text: "拿香向觀音祈求保佑", correct: false },
+        { text: "立刻拔腿就跑", correct: false },
+        { text: "當場假裝小便（使婦女羞避離開）", correct: true },
+        { text: "大聲吆喝嚇跑路人", correct: false }
+      ]
+    },
+    {
+      stage: "第二關：【販仔白】集市心算",
+      bg: "market_scene_bg.png",
+      prompt: "魚菜市場賣家對同夥講僻：『這件成本是【任仔銀】，賣他【才仔銀】！』",
+      sub: "（提示：販仔白十音口訣：幼色冬真任皆才捌欠臺 = 1~10）",
+      options: [
+        { text: "成本 5 圓，獲利 2 圓（售價 7 圓）", correct: true },
+        { text: "成本 2 圓，獲利 5 圓（售價 7 圓）", correct: false },
+        { text: "成本 3 圓，獲利 4 圓（售價 7 圓）", correct: false },
+        { text: "成本 1 圓，獲利 6 圓（售價 7 圓）", correct: false }
+      ]
+    },
+    {
+      stage: "第二關：【牛販仔白】牛墟袖裡乾坤",
+      bg: "market_scene_bg.png",
+      prompt: "牛販伸進布袋比劃，對你低語：『這隻黃牛要【水仔銀】，底價是【口仔銀】！』",
+      sub: "（提示：牛販仔白十音口訣：天下平口水龍門不見開 = 1~10）",
+      options: [
+        { text: "開價 6 圓，底價 3 圓", correct: false },
+        { text: "開價 8 圓，底價 5 圓", correct: false },
+        { text: "開價 4 圓，底價 2 圓", correct: false },
+        { text: "開價 5 圓，底價 4 圓", correct: true }
+      ]
+    },
+    {
+      stage: "第三關：【司公白】法事紅包計算",
+      bg: "taoist_scene_bg.png",
+      prompt: "師兄在喪家前低聲說：『這場法事包了【疼仔銀】，給助手分【控仔銀】！』",
+      sub: "（提示：司公白十音口訣：疼挾穿挲控抐踢眉曲干 = 1~10）",
+      options: [
+        { text: "總紅包 5 圓，助手分到 2 圓", correct: false },
+        { text: "總紅包 10 圓，助手分到 5 圓", correct: true },
+        { text: "總紅包 10 圓，助手分到 6 圓", correct: false },
+        { text: "總紅包 8 圓，助手分到 4 圓", correct: false }
+      ]
+    }
+  ];
+
+  let currentQ = 0;
+  let score = 0;
+
+  function startGame() {
+    currentQ = 0;
+    score = 0;
+    showQuestion();
+  }
+
+  function showQuestion() {
+    const q = questions[currentQ];
+    document.getElementById("game-container").style.backgroundImage = `url('${q.bg}')`;
+    document.getElementById("stage-title").innerText = q.stage;
+    document.getElementById("stage-subtitle").innerText = `解密挑戰 (${currentQ + 1}/${questions.length})`;
+    document.getElementById("prompt-text").innerText = q.prompt;
+    document.getElementById("sub-text").innerText = q.sub;
+    document.getElementById("score").innerText = score;
+    document.getElementById("progress").innerText = `關卡 ${currentQ + 1} / ${questions.length}`;
+
+    // 1. 每次顯示題目時，自動打亂選項順序
+    q.options.sort(() => Math.random() - 0.5);
+
+    const grid = document.getElementById("options-grid");
+    grid.innerHTML = "";
+    
+    // 2. 定義選項字母標號
+    const prefixes = ["A", "B", "C", "D"];
+
+    // 3. 根據打亂後的順序，重新依序編上 A. B. C. D.
+    q.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "btn";
+      btn.innerText = `${prefixes[idx]}. ${opt.text}`;
+      btn.onclick = () => checkAnswer(opt.correct);
+      grid.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(isCorrect) {
+    if (isCorrect) {
+      score += 20;
+      alert("🎉 解密正確！你聽懂了暗語的真正意圖！");
+    } else {
+      alert("❌ 解密失敗！你被外行人假象騙過了或暴露了身分！");
+    }
+    currentQ++;
+    if (currentQ < questions.length) {
+      showQuestion();
+    } else {
+      endGame();
+    }
+  }
+
+  function endGame() {
+    document.getElementById("stage-title").innerText = "🏆 挑戰結束！";
+    document.getElementById("prompt-text").innerText = `你的最終得分：${score} 分！`;
+    document.getElementById("sub-text").innerText = score >= 80 ? "太厲害了！你已經完全掌握舊時代臺灣同途人的暗語智慧！" : "再接再厲，多熟悉口訣就能破解江湖暗號！";
+    const grid = document.getElementById("options-grid");
+    grid.innerHTML = `<button class="btn" onclick="startGame()">🔄 重新挑戰</button>`;
+  }
+</script>
+</body>
+</html>
