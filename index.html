@@ -19,71 +19,100 @@ h1 { color: #e8985e; font-size: 28px; letter-spacing: 2px; }
 .btn { background: #4a3628; color: #f4efeb; border: 1px solid #c8a364; padding: 14px; font-size: 16px; border-radius: 4px; cursor: pointer; transition: all 0.2s; text-align: left; }
 .btn:hover { background: #e8985e; color: #1a120c; font-weight: bold; transform: translateY(-2px); }
 footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(200,163,100,0.4); padding-top: 10px; font-size: 14px; }
-.score-badge { background: #c8a364; color: #1a120c; padding: 4px 12px; border-radius: 12px; font-weight: bold; }
 
-/* 【新增】PDF 觸發按鈕與彈出視窗 (Modal) 樣式 */
+/* 頁尾按鈕群組 */
+.footer-buttons { display: flex; gap: 10px; }
 .pdf-btn {
-background: #c8a364;
-color: #1a120c;
-padding: 5px 12px;
-border-radius: 4px;
-font-weight: bold;
-font-size: 13px;
-cursor: pointer;
-border: none;
-transition: all 0.2s;
+  background: #c8a364;
+  color: #1a120c;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 }
-.pdf-btn:hover {
-background: #e8985e;
-}
+.pdf-btn:hover { background: #e8985e; color: #1a120c; }
+
+/* 遊戲內 HTML 同途隱語錄 Modal 樣式 */
 #pdf-modal {
-display: none;
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background: rgba(0, 0, 0, 0.85);
-z-index: 9999;
-justify-content: center;
-align-items: center;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.88);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
 }
 .modal-content {
-width: 85%;
-height: 85%;
-background: #2b2521;
-border: 2px solid #c8a364;
-border-radius: 8px;
-position: relative;
-display: flex;
-flex-direction: column;
-overflow: hidden;
-box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+  width: 90%;
+  max-width: 860px;
+  height: 85vh;
+  background: #231b15;
+  border: 2px solid #c8a364;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.9);
 }
 .modal-header {
-background: #1a120c;
-color: #e8985e;
-padding: 10px 20px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-border-bottom: 1px solid #c8a364;
+  background: #150f0b;
+  color: #e8985e;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #c8a364;
 }
 .close-btn {
-background: #e8985e;
-color: #1a120c;
-border: none;
-padding: 4px 10px;
-border-radius: 4px;
-cursor: pointer;
-font-weight: bold;
+  background: #e8985e;
+  color: #1a120c;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
 }
-.close-btn:hover {
-background: #c8a364;
+.close-btn:hover { background: #c8a364; }
+
+/* 隱語錄頁籤 */
+.tab-nav { display: flex; background: #1a120c; border-bottom: 1px solid #4a3628; overflow-x: auto; }
+.tab-btn {
+  background: transparent;
+  color: #d4c5b9;
+  border: none;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  border-bottom: 3px solid transparent;
 }
+.tab-btn.active { color: #e8985e; border-bottom: 3px solid #e8985e; font-weight: bold; background: #2b2521; }
+.tab-btn:hover { color: #ffffff; }
+
+.tab-body { padding: 22px; overflow-y: auto; flex: 1; color: #f4efeb; line-height: 1.8; font-size: 15px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.codex-section { margin-bottom: 20px; border-bottom: 1px dashed #4a3628; padding-bottom: 15px; }
+.codex-title { color: #e8985e; font-size: 18px; margin-bottom: 8px; font-weight: bold; }
+.codex-list { list-style: none; padding-left: 5px; }
+.codex-list li { margin-bottom: 6px; }
+.roman { color: #d4c5b9; font-size: 13px; font-family: monospace; }
+.example { color: #c8a364; font-size: 14px; margin-left: 12px; display: block; }
 </style>
 </head>
 <body>
+
+<!-- 1. 遊戲容器 -->
 <div id="game-container">
 <div class="overlay">
 <header>
@@ -99,156 +128,360 @@ background: #c8a364;
 </div>
 <footer>
 <span>目前得分：<span id="score">0</span></span>
-<!-- 【新增】觸發彈出視窗按鈕 -->
-<button onclick="openModal()" class="pdf-btn">📜 開啟暗語圖鑑 (PDF)</button>
+
+<!-- 雙功能按鈕：遊戲內隱語錄與另開 PDF 雙軌並存 -->
+<div class="footer-buttons">
+  <button onclick="openModal()" class="pdf-btn">📜 同途隱語錄</button>
+  <a href="taiwan_cant_guide.pdf" target="_blank" class="pdf-btn">📄 另開 PDF 簡報</a>
+</div>
+
 <span id="progress">關卡 0 / 5</span>
 </footer>
 </div>
 </div>
-<!-- 【新增】暗語圖鑑彈出視窗 (Modal) -->
+
+<!-- 2. 全功能遊戲內 HTML 同途隱語錄 (收錄《暗語隱語(整理).txt》完整內容) -->
 <div id="pdf-modal">
-<div class="modal-content">
-<div class="modal-header">
-<span>📖 臺灣舊社會暗語解密 - 完整文獻圖鑑</span>
-<button onclick="closeModal()" class="close-btn">✕ 關閉視窗</button>
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>📜 臺灣舊社會隱語錄（收錄1932臺日大辭典「隱語」語料）</span>
+      <button onclick="closeModal()" class="close-btn">✕ 關閉隱語錄</button>
+    </div>
+
+    <!-- 頁籤導覽列 -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab(0)">總論概念</button>
+      <button class="tab-btn" onclick="switchTab(1)">賊仔白 (竊盜隱語)</button>
+      <button class="tab-btn" onclick="switchTab(2)">販仔白 (集市商業)</button>
+      <button class="tab-btn" onclick="switchTab(3)">牛販仔白 (牛墟交易)</button>
+      <button class="tab-btn" onclick="switchTab(4)">司公白 (道士法事)</button>
+      <button class="tab-btn" onclick="switchTab(5)">王祿白與婦女</button>
+    </div>
+
+    <!-- 隱語錄主體內容 -->
+    <div class="tab-body">
+      
+      <!-- 頁籤 0：總論 -->
+      <div class="tab-content active">
+        <div class="codex-section">
+          <div class="codex-title">【總論與基礎概念】</div>
+          <ul class="codex-list">
+            <li>• <strong>隱語</strong> <span class="roman">[ín-gí / ún-gú / írn-gír]</span>：舊社會內部隱蔽真實意圖的特殊詞彙。</li>
+            <li>• <strong>白</strong> <span class="roman">[pe̍h]</span>：圈內人使用的代碼或暗語。</li>
+            <li>• <strong>僻 / 僻話 / 偏僻話</strong> <span class="roman">[phiah / phiah-uē / phiah-gú / phian-phiah-uē]</span>：同業或特定圈子的私人語言。</li>
+            <li>• <strong>講僻</strong> <span class="roman">[kóng-phiah]</span>：講私人暗語或行話。</li>
+            <li>• <strong>放白</strong> <span class="roman">[pàng-pe̍h]</span>：對同夥發出暗號或傳遞情報。</li>
+            <span class="example">💬 經典例句：同途人咧講僻 [tâng tôo lâng leh kóng-phiah]（圈內同業人在講暗語）</span>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 頁籤 1：賊仔白 -->
+      <div class="tab-content">
+        <div class="codex-section">
+          <div class="codex-title">【賊仔白 (tsha̍t-á-pe̍h)】犯罪與掠奪術語</div>
+          <p class="roman" style="margin-bottom:8px;">拍賊仔白咧講 [phah tsha̍t-á-pe̍h teh kóng]</p>
+          
+          <p style="color:#e8985e; margin: 10px 0 5px 0; font-weight:bold;">🛠 行頭與裝備：</p>
+          <ul class="codex-list">
+            <li>• <strong>大食</strong> <span class="roman">[tuā-tsia̍h]</span>：粗麻布袋。</li>
+            <li>• <strong>槓仔</strong> <span class="roman">[kǹg-á]</span>：火繩槍。</li>
+            <li>• <strong>刺仔</strong> <span class="roman">[tshì-á]</span>：刀具。</li>
+          </ul>
+
+          <p style="color:#e8985e; margin: 10px 0 5px 0; font-weight:bold;">🌾 掠奪與偷竊行動代碼：</p>
+          <ul class="codex-list">
+            <li>• <strong>遏筍仔</strong> <span class="roman">[at-sún-á]</span>：強奪。</li>
+            <li>• <strong>遏鳳梨</strong> <span class="roman">[at-ōng-lâi]</span>：偷雞。</li>
+            <li>• <strong>拔塗柱</strong> <span class="roman">[pui̍h-thôo-thiāu]</span>：偷地瓜。</li>
+            <li>• <strong>拔杙仔</strong> <span class="roman">[pui̍h-khi̍t-á]</span>：拔下婦女頭上的髮飾。</li>
+            <li>• <strong>撐竹棑</strong> <span class="roman">[the-tik-pâi]</span>：偷鴨子。</li>
+            <li>• <strong>天--仔</strong> <span class="roman">[thian--á]</span>：被褥。<span class="example">例：天--仔弄--來 [thian--á lāng--lâi]（把被褥偷來）</span></li>
+            <li>• <strong>抽藤</strong> <span class="roman">[thiu-tîn]</span>：偷竊甘蔗或牛。</li>
+            <li>• <strong>掠鯪鯉</strong> <span class="roman">[lia̍h-lâ-lí]</span>：偷竹筍。</li>
+            <li>• <strong>㨨藤仔</strong> <span class="roman">[liû-tîn-á]</span>：偷牛。</li>
+            <li>• <strong>挲圓仔</strong> <span class="roman">[so-înn-á]</span>：偷水果。</li>
+          </ul>
+
+          <p style="color:#e8985e; margin: 10px 0 5px 0; font-weight:bold;">👥 角色、情勢與戰術：</p>
+          <ul class="codex-list">
+            <li>• <strong>龍--仔</strong> <span class="roman">[liông--á]</span>：搭檔、夥伴。</li>
+            <li>• <strong>水</strong> <span class="roman">[tsuí]</span>：同夥、團隊。
+              <span class="example">• 彼水較硬 [hit tsuí khah ngī]（那組同夥很強）</span>
+              <span class="example">• 龍仔，水到--囉 [liông á tsuí kàu--looh]（搭檔，夥伴來了）</span>
+              <span class="example">• 土匪發水 [thóo huí huat tsuí]（土匪起義/動員了）</span>
+              <span class="example">• 軟水 [nńg tsuí]（弱隊/實力弱的同伴）</span>
+              <span class="example">• 退水 [thè tsuí / thèr-tsuí]（撤離、撤退）</span>
+              <span class="example">• 對伊出水 [tuí i tshut tsuí]（派出同伴去對付他/追究責任）</span>
+              <span class="example">• 拄水 [tú tsuí]（反抗盜賊同夥）</span>
+            </li>
+            <li>• <strong>風</strong> <span class="roman">[hong]</span>：獵物（意指旅人）。
+              <span class="example">• 風到--囉 [hong kàu--looh]（獵物/旅人來了）</span>
+              <span class="example">• 好風 [hó hong]（肥羊/好獵物）</span>
+              <span class="example">• 大風 [tūa hong]（成群的鴨子/獵物）</span>
+            </li>
+            <li>• <strong>觀音在所</strong> <span class="roman">[kuan-im tsāi-sóo]</span>：有個女人在場。
+              <span class="example">• 觀音在所大香共伊燒--去 [kuan-im tsāi-sóo tuā hiunn kā i sio--khì]：若有女子在場，不妨假裝小便。因為偷雞時小便，婦女會羞避逃離。</span>
+            </li>
+            <li>• <strong>天燈縋起</strong> <span class="roman">[thian-ting luī-khí]</span>：升起孔明燈，意指放火。</li>
+            <li>• <strong>弄烏龍</strong> <span class="roman">[lāng-oo-lîng]</span>：摘下頭巾。</li>
+            <li>• <strong>落龍鱗</strong> <span class="roman">[làu-liông-lân]</span>：弄壞屋頂瓦片。</li>
+            <li>• <strong>掠壁蟲</strong> <span class="roman">[lia̍h-piah-thâng]</span>：在牆上鑽洞。</li>
+            <li>• <strong>滾地龍</strong> <span class="roman">[kún-tuē-lîng]</span>：在地上鑽孔。</li>
+            <li>• <strong>三仔三十一 / 三一三十一</strong> <span class="roman">[sam-á sam-si̍p-it]</span>：共謀串通。
+              <span class="example">• 二個三仔三十一共人食了了（兩人串通一氣，把東西塞進懷裡）</span>
+            </li>
+            <li>• <strong>閃涼</strong> <span class="roman">[siám-liâng]</span>：逃跑、躲藏起來。
+              <span class="example">• 警察來--囉閃涼--喔 [kíng tshat lâi--looh siám-liâng--ooh]（警察來了，快跑！）</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 頁籤 2：販仔白 -->
+      <div class="tab-content">
+        <div class="codex-section">
+          <div class="codex-title">【販仔白 (huàn-á-pe̍h)】行商與集市交易代碼</div>
+          <p>行商或魚菜市場用來防範外人干擾、確保價格機密的數字加密系統。</p>
+          
+          <p style="color:#e8985e; margin: 10px 0 5px 0; font-weight:bold;">🔢 十音數字口訣 (1 ~ 10)：</p>
+          <p class="roman" style="font-size:16px; color:#ffffff; background:#1a120c; padding:8px; border-radius:4px;">
+            幼 (iù) 、 色 (sik) 、 冬 (tang) 、 真 (tsin) 、 任 (jîm) 、 皆 (kai) 、 才 (tsâi) 、 捌 (piat) 、 欠 (khiàm) 、 臺 (tâi)
+          </p>
+
+          <p style="color:#e8985e; margin: 10px 0 5px 0; font-weight:bold;">💰 貨幣與金額應用：</p>
+          <ul class="codex-list">
+            <li>• <strong>幼仔銀</strong> <span class="roman">[iù á gûn]</span>：一圓。</li>
+            <li>• <strong>幼仔錢</strong> <span class="roman">[iù-á sián]</span>：一分。</li>
+            <li>• <strong>色仔銀</strong> <span class="roman">[sik á gûn]</span>：二圓。</li>
+            <li>• <strong>冬仔銀</strong> <span class="roman">[tang á gûn]</span>：三圓。</li>
+            <li>• <strong>任仔銀</strong> <span class="roman">[jîm á gûn]</span>：五圓。</li>
+            <li>• <strong>皆仔錢</strong> <span class="roman">[kai á tsînn]</span>：六分。</li>
+            <li>• <strong>才仔銀</strong> <span class="roman">[tsâi á gûn]</span>：七圓。</li>
+            <li>• <strong>捌仔錢</strong> <span class="roman">[piat á sián]</span>：八分。</li>
+            <li>• <strong>欠仔錢</strong> <span class="roman">[khiàm á sián]</span>：九分。</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 頁籤 3：牛販仔白 -->
+      <div class="tab-content">
+        <div class="codex-section">
+          <div class="codex-title">【牛販仔白 (gû huàn-á-pe̍h)】牛墟交易代碼</div>
+          <p>傳統牛墟市場中，牛販暗中遮掩、盲捏手指交易時搭配的的祕密代碼。</p>
+          
+          <p style="color:#e8985e; margin: 10px 0 5px 0; font-weight:bold;">🔢 十音數字口訣 (1 ~ 10)：</p>
+          <p class="roman" style="font-size:16px; color:#ffffff; background:#1a120c; padding:8px; border-radius:4px;">
+            天 (thian) 、 下 (hā/hē) 、 平 (pîng/phîng) 、 口 (khóo/khió) 、 水 (súi) 、 龍 (liông) 、 門 (bûn) 、 不 (put) 、 見 (kiàn) 、 開 (khai)
+          </p>
+
+          <p style="color:#e8985e; margin: 10px 0 5px 0; font-weight:bold;">⚖️ 重量與金額應用：</p>
+          <ul class="codex-list">
+            <li>• <strong>天仔銀</strong> <span class="roman">[thian á gûn]</span>：一圓。</li>
+            <li>• <strong>下斤</strong> <span class="roman">[hā kun]</span>：二斤。</li>
+            <li>• <strong>平仔銀</strong> <span class="roman">[pîng á gûn]</span>：三圓。</li>
+            <li>• <strong>口仔銀</strong> <span class="roman">[khóo á gûn]</span>：四圓。</li>
+            <li>• <strong>水仔銀</strong> <span class="roman">[súi á gûn]</span>：五圓。</li>
+            <li>• <strong>龍仔銀</strong> <span class="roman">[liông á gûn]</span>：六圓。</li>
+            <li>• <strong>門仔銀</strong> <span class="roman">[bûn á gûn]</span>：七圓。</li>
+            <li>• <strong>不仔銀</strong> <span class="roman">[put á gûn]</span>：八圓。</li>
+            <li>• <strong>見仔銀</strong> <span class="roman">[kiàn á gûn]</span>：九圓。</li>
+            <li>• <strong>開仔銀</strong> <span class="roman">[khai á gûn]</span>：十圓。</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 頁籤 4：司公白 -->
+      <div class="tab-content">
+        <div class="codex-section">
+          <div class="codex-title">【司公白 (sai-kong-pe̍h)】道士與法事數字加密</div>
+          <p>道士（司公）與法師在進行法事或收取紅包時，溝通金額所用的祕密口訣。</p>
+          
+          <p style="color:#e8985e; margin: 10px 0 5px 0; font-weight:bold;">🔢 十音數字口訣 (1 ~ 10)：</p>
+          <p class="roman" style="font-size:16px; color:#ffffff; background:#1a120c; padding:8px; border-radius:4px;">
+            疼 (thiànn) 、 挾 (ngeh) 、 穿 (tshng) 、 挲 (so) 、 控 (khàng) 、 抐 (lā) 、 踢 (that) 、 眉 (bâi) 、 曲 (khiau) 、 干 (kan)
+          </p>
+
+          <p style="color:#e8985e; margin: 10px 0 5px 0; font-weight:bold;">💴 法事紅包金額代碼：</p>
+          <ul class="codex-list">
+            <li>• <strong>控仔銀</strong> <span class="roman">[khàng á gûn]</span>：五圓。</li>
+            <li>• <strong>抐仔銀</strong> <span class="roman">[lā á gûn]</span>：六圓。</li>
+            <li>• <strong>眉仔銀</strong> <span class="roman">[bâi á gûn]</span>：八圓。</li>
+            <li>• <strong>曲仔銀</strong> <span class="roman">[khiau á gûn]</span>：九圓。</li>
+            <li>• <strong>疼仔銀 / 干仔銀</strong> <span class="roman">[thiànn á gûn / kan á gûn]</span>：十圓。</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 頁籤 5：王祿白與婦女 -->
+      <div class="tab-content">
+        <div class="codex-section">
+          <div class="codex-title">【王祿白 (ông-lo̍k-pe̍h) 與其他隱語】</div>
+          <ul class="codex-list">
+            <li>• <strong>王祿白</strong> <span class="roman">[ông-lo̍k-pe̍h]</span>：江湖郎中、賣藥商販或走江湖者所用的圈內術語（辭典內未收錄細節）。</li>
+            <li>• <strong>烏髻</strong> <span class="roman">[oo-kè]</span>：暗語中對婦女的稱呼。</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
-<!-- 增加 object 相容標籤，確保 PC 端能順利預覽 PDF -->
-<object data="taiwan_cant_guide.pdf" type="application/pdf" width="100%" height="100%">
-  <iframe src="taiwan_cant_guide.pdf" width="100%" height="100%" style="border:none;"></iframe>
-</object>
-</div>
-</div>
+
 <script>
-// 【新增】控制彈出視窗顯示與隱藏的函數
+// 控制 Modal 顯示與關閉
 function openModal() {
-document.getElementById('pdf-modal').style.display = 'flex';
+  document.getElementById('pdf-modal').style.display = 'flex';
 }
 function closeModal() {
-document.getElementById('pdf-modal').style.display = 'none';
+  document.getElementById('pdf-modal').style.display = 'none';
 }
-// 圖片預載機制（統一改為 .jpg 確保與下方的檔名一致）
+
+// 切換隱語錄頁籤
+function switchTab(index) {
+  const tabs = document.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.tab-content');
+  tabs.forEach((tab, i) => {
+    if (i === index) {
+      tab.classList.add('active');
+      contents[i].classList.add('active');
+    } else {
+      tab.classList.remove('active');
+      contents[i].classList.remove('active');
+    }
+  });
+}
+
+// 圖片預載機制
 const bgImages = ["thief_scene_bg.jpg", "market_scene_bg.jpg", "taoist_scene_bg.jpg"];
 bgImages.forEach(src => {
-const img = new Image();
-img.src = src;
+  const img = new Image();
+  img.src = src;
 });
+
+// 完全保留 index.docx 原有題目資料
 const questions = [
-{
-stage: "第一關：【賊仔白】黑夜潛行",
-bg: "thief_scene_bg.jpg",
-prompt: "老大低聲對你喊：『龍仔，去【遏鳳梨】[at-ōng-lâi]！』",
-sub: "你身為同夥，現在應該點擊目標執行什麼行動？",
-options: [
-{ text: "前往鳳梨田採水果", correct: false },
-{ text: "前往雞舍偷雞", correct: true },
-{ text: "潛入屋內偷竊被褥", correct: false },
-{ text: "拔下婦女頭上的髮飾", correct: false }
-]
-},
-{
-stage: "第一關：【賊仔白】黑夜潛行",
-bg: "thief_scene_bg.jpg",
-prompt: "周圍傳來腳步聲，老大急喊：『觀音在所大香共伊燒--去！』",
-sub: "這是賊仔白的避敵心理戰術，你應該怎麼做？",
-options: [
-{ text: "拿香向觀音祈求保佑", correct: false },
-{ text: "立刻拔腿就跑", correct: false },
-{ text: "當場假裝小便（使婦女羞避離開）", correct: true },
-{ text: "大聲吆喝嚇跑路人", correct: false }
-]
-},
-{
-stage: "第二關：【販仔白】集市心算",
-bg: "market_scene_bg.jpg",
-prompt: "魚菜市場賣家對同夥講僻：『這件成本是【任仔銀】，賣他【才仔銀】！』",
-sub: "（提示：販仔白十音口訣：幼色冬真任皆才捌欠臺 = 1~10）",
-options: [
-{ text: "成本 5 圓，獲利 2 圓（售價 7 圓）", correct: true },
-{ text: "成本 2 圓，獲利 5 圓（售價 7 圓）", correct: false },
-{ text: "成本 3 圓，獲利 4 圓（售價 7 圓）", correct: false },
-{ text: "成本 1 圓，獲利 6 圓（售價 7 圓）", correct: false }
-]
-},
-{
-stage: "第二關：【牛販仔白】牛墟袖裡乾坤",
-bg: "market_scene_bg.jpg",
-prompt: "牛販伸進布袋比劃，對你低語：『這隻黃牛要【水仔銀】，底價是【口仔銀】！』",
-sub: "（提示：牛販仔白十音口訣：天下平口水龍門不見開 = 1~10）",
-options: [
-{ text: "開價 6 圓，底價 3 圓", correct: false },
-{ text: "開價 8 圓，底價 5 圓", correct: false },
-{ text: "開價 4 圓，底價 2 圓", correct: false },
-{ text: "開價 5 圓，底價 4 圓", correct: true }
-]
-},
-{
-stage: "第三關：【司公白】法事紅包計算",
-bg: "taoist_scene_bg.jpg",
-prompt: "師兄在喪家前低聲說：『這場法事包了【疼仔銀】，給助手分【控仔銀】！』",
-sub: "（提示：司公白十音口訣：疼挾穿挲控抐踢眉曲干 = 1~10）",
-options: [
-{ text: "總紅包 5 圓，助手分到 2 圓", correct: false },
-{ text: "總紅包 10 圓，助手分到 5 圓", correct: true },
-{ text: "總紅包 10 圓，助手分到 6 圓", correct: false },
-{ text: "總紅包 8 圓，助手分到 4 圓", correct: false }
-]
-}
+  {
+    stage: "第一關：【賊仔白】黑夜潛行",
+    bg: "thief_scene_bg.jpg",
+    prompt: "老大低聲對你喊：『龍仔，去【遏鳳梨】[at-ōng-lâi]！』",
+    sub: "你身為同夥，現在應該點擊目標執行什麼行動？",
+    options: [
+      { text: "前往鳳梨田採水果", correct: false },
+      { text: "前往雞舍偷雞", correct: true },
+      { text: "潛入屋內偷竊被褥", correct: false },
+      { text: "拔下婦女頭上的髮飾", correct: false }
+    ]
+  },
+  {
+    stage: "第一關：【賊仔白】黑夜潛行",
+    bg: "thief_scene_bg.jpg",
+    prompt: "周圍傳來腳步聲，老大急喊：『觀音在所大香共伊燒--去！』",
+    sub: "這是賊仔白的避敵心理戰術，你應該怎麼做？",
+    options: [
+      { text: "拿香向觀音祈求保佑", correct: false },
+      { text: "立刻拔腿就跑", correct: false },
+      { text: "當場假裝小便（使婦女羞避離開）", correct: true },
+      { text: "大聲吆喝嚇跑路人", correct: false }
+    ]
+  },
+  {
+    stage: "第二關：【販仔白】集市心算",
+    bg: "market_scene_bg.jpg",
+    prompt: "魚菜市場賣家對同夥講僻：『這件成本是【任仔銀】，賣他【才仔銀】！』",
+    sub: "（提示：販仔白十音口訣：幼色冬真任皆才捌欠臺 = 1~10）",
+    options: [
+      { text: "成本 5 圓，獲利 2 圓（售價 7 圓）", correct: true },
+      { text: "成本 2 圓，獲利 5 圓（售價 7 圓）", correct: false },
+      { text: "成本 3 圓，獲利 4 圓（售價 7 圓）", correct: false },
+      { text: "成本 1 圓，獲利 6 圓（售價 7 圓）", correct: false }
+    ]
+  },
+  {
+    stage: "第二關：【牛販仔白】牛墟袖裡乾坤",
+    bg: "market_scene_bg.jpg",
+    prompt: "牛販伸進布袋比劃，對你低語：『這隻黃牛要【水仔銀】，底價是【口仔銀】！』",
+    sub: "（提示：牛販仔白十音口訣：天下平口水龍門不見開 = 1~10）",
+    options: [
+      { text: "開價 6 圓，底價 3 圓", correct: false },
+      { text: "開價 8 圓，底價 5 圓", correct: false },
+      { text: "開價 4 圓，底價 2 圓", correct: false },
+      { text: "開價 5 圓，底價 4 圓", correct: true }
+    ]
+  },
+  {
+    stage: "第三關：【司公白】法事紅包計算",
+    bg: "taoist_scene_bg.jpg",
+    prompt: "師兄在喪家前低聲說：『這場法事包了【疼仔銀】，給助手分【控仔銀】！』",
+    sub: "（提示：司公白十音口訣：疼挾穿挲控抐踢眉曲干 = 1~10）",
+    options: [
+      { text: "總紅包 5 圓，助手分到 2 圓", correct: false },
+      { text: "總紅包 10 圓，助手分到 5 圓", correct: true },
+      { text: "總紅包 10 圓，助手分到 6 圓", correct: false },
+      { text: "總紅包 8 圓，助手分到 4 圓", correct: false }
+    ]
+  }
 ];
+
 let currentQ = 0;
 let score = 0;
+
 function startGame() {
-currentQ = 0;
-score = 0;
-showQuestion();
+  currentQ = 0;
+  score = 0;
+  showQuestion();
 }
+
 function showQuestion() {
-const q = questions[currentQ];
-document.getElementById("game-container").style.backgroundImage = `url('${q.bg}')`;
-document.getElementById("stage-title").innerText = q.stage;
-document.getElementById("stage-subtitle").innerText = `解密挑戰 (${currentQ + 1}/${questions.length})`;
-document.getElementById("prompt-text").innerText = q.prompt;
-document.getElementById("sub-text").innerText = q.sub;
-document.getElementById("score").innerText = score;
-document.getElementById("progress").innerText = `關卡 ${currentQ + 1} / ${questions.length}`;
+  const q = questions[currentQ];
+  document.getElementById("game-container").style.backgroundImage = `url('${q.bg}')`;
+  document.getElementById("stage-title").innerText = q.stage;
+  document.getElementById("stage-subtitle").innerText = `解密挑戰 (${currentQ + 1}/${questions.length})`;
+  document.getElementById("prompt-text").innerText = q.prompt;
+  document.getElementById("sub-text").innerText = q.sub;
+  document.getElementById("score").innerText = score;
+  document.getElementById("progress").innerText = `關卡 ${currentQ + 1} / ${questions.length}`;
 
-// 1. 每次顯示題目時，自動打亂選項順序
-q.options.sort(() => Math.random() - 0.5);
+  // 1. 每次顯示題目時，自動打亂選項順序
+  q.options.sort(() => Math.random() - 0.5);
 
-const grid = document.getElementById("options-grid");
-grid.innerHTML = "";
+  const grid = document.getElementById("options-grid");
+  grid.innerHTML = "";
 
-// 2. 定義選項字母標號
-const prefixes = ["A", "B", "C", "D"];
+  // 2. 定義選項字母標號
+  const prefixes = ["A", "B", "C", "D"];
 
-// 3. 根據打亂後的順序，重新依序編上 A. B. C. D.
-q.options.forEach((opt, idx) => {
-const btn = document.createElement("button");
-btn.className = "btn";
-btn.innerText = `${prefixes[idx]}. ${opt.text}`;
-btn.onclick = () => checkAnswer(opt.correct);
-grid.appendChild(btn);
-});
+  // 3. 根據打亂後的順序，重新依序編上 A. B. C. D.
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "btn";
+    btn.innerText = `${prefixes[idx]}. ${opt.text}`;
+    btn.onclick = () => checkAnswer(opt.correct);
+    grid.appendChild(btn);
+  });
 }
+
 function checkAnswer(isCorrect) {
-if (isCorrect) {
-score += 20;
-alert("🎉 解密正確！你聽懂了暗語的真正意圖！");
-} else {
-alert("❌ 解密失敗！你被外行人假象騙過了或暴露了身分！");
+  if (isCorrect) {
+    score += 20;
+    alert("🎉 解密正確！你聽懂了暗語的真正意圖！");
+  } else {
+    alert("❌ 解密失敗！你被外行人假象騙過了或暴露了身分！");
+  }
+  currentQ++;
+  if (currentQ < questions.length) {
+    showQuestion();
+  } else {
+    endGame();
+  }
 }
-currentQ++;
-if (currentQ < questions.length) {
-showQuestion();
-} else {
-endGame();
-}
-}
+
 function endGame() {
-document.getElementById("stage-title").innerText = "🏆 挑戰結束！";
-document.getElementById("prompt-text").innerText = `你的最終得分：${score} 分！`;
-document.getElementById("sub-text").innerText = score >= 80 ? "太厲害了！你已經完全掌握舊時代臺灣同途人的暗語智慧！" : "再接再厲，多熟悉口訣就能破解江湖暗號！";
-const grid = document.getElementById("options-grid");
-grid.innerHTML = `<button class="btn" onclick="startGame()">🔄 重新挑戰</button>`;
+  document.getElementById("stage-title").innerText = "🏆 挑戰結束！";
+  document.getElementById("prompt-text").innerText = `你的最終得分：${score} 分！`;
+  document.getElementById("sub-text").innerText = score >= 80 ? "太厲害了！你已經完全掌握舊時代臺灣同途人的暗語智慧！" : "再接再厲，多熟悉口訣就能破解江湖暗號！";
+  const grid = document.getElementById("options-grid");
+  grid.innerHTML = `<button class="btn" onclick="startGame()">🔄 重新挑戰</button>`;
 }
 </script>
 </body>
