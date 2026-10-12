@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>臺灣舊社會暗語解密 - 互動遊戲</title>
+  <title>臺灣舊社會暗語解密 - Old Taiwan Cant</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Noto Serif TC", "Traditional Chinese", serif; }
     body { background-color: #2b2521; color: #f4efeb; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -48,10 +48,17 @@
 </div>
 
 <script>
+  // 圖片預載機制，確保關卡切換不卡頓
+  const bgImages = ["thief_scene_bg.webp", "market_scene_bg.webp", "taoist_scene_bg.webp"];
+  bgImages.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+
   const questions = [
     {
       stage: "第一關：【賊仔白】黑夜潛行",
-      bg: "thief_scene_bg.png",
+      bg: "thief_scene_bg.jpg",
       prompt: "老大低聲對你喊：『龍仔，去【遏鳳梨】[at-ōng-lâi]！』",
       sub: "你身為同夥，現在應該點擊目標執行什麼行動？",
       options: [
@@ -63,7 +70,7 @@
     },
     {
       stage: "第一關：【賊仔白】黑夜潛行",
-      bg: "thief_scene_bg.png",
+      bg: "thief_scene_bg.jpg",
       prompt: "周圍傳來腳步聲，老大急喊：『觀音在所大香共伊燒--去！』",
       sub: "這是賊仔白的避敵心理戰術，你應該怎麼做？",
       options: [
@@ -75,7 +82,7 @@
     },
     {
       stage: "第二關：【販仔白】集市心算",
-      bg: "market_scene_bg.png",
+      bg: "market_scene_bg.jpg",
       prompt: "魚菜市場賣家對同夥講僻：『這件成本是【任仔銀】，賣他【才仔銀】！』",
       sub: "（提示：販仔白十音口訣：幼色冬真任皆才捌欠臺 = 1~10）",
       options: [
@@ -87,7 +94,7 @@
     },
     {
       stage: "第二關：【牛販仔白】牛墟袖裡乾坤",
-      bg: "market_scene_bg.png",
+      bg: "market_scene_bg.jpg",
       prompt: "牛販伸進布袋比劃，對你低語：『這隻黃牛要【水仔銀】，底價是【口仔銀】！』",
       sub: "（提示：牛販仔白十音口訣：天下平口水龍門不見開 = 1~10）",
       options: [
@@ -99,7 +106,7 @@
     },
     {
       stage: "第三關：【司公白】法事紅包計算",
-      bg: "taoist_scene_bg.png",
+      bg: "taoist_scene_bg.jpg",
       prompt: "師兄在喪家前低聲說：『這場法事包了【疼仔銀】，給助手分【控仔銀】！』",
       sub: "（提示：司公白十音口訣：疼挾穿挲控抐踢眉曲干 = 1~10）",
       options: [
